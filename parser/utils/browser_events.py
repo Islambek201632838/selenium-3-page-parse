@@ -17,21 +17,29 @@ class BrowserEvents(HandleWindow):
         return selected_option_text
 
     def _click_search(self):
-        search_button = self.driver.find_element(By.ID, "ctl00_cphRegistersMasterPage_btnFirmNameSearch")
-        modifier_key = Keys.COMMAND if platform.system() == 'Darwin' else Keys.CONTROL
-        action = ActionChains(self.driver)
-        action.key_down(modifier_key).click(search_button).key_up(modifier_key).perform()
-        time.sleep(2) 
-
-    def _click_link(self, cells):
-            link = cells[1].find_element(By.TAG_NAME, "a")
-            # Determine the modifier key based on the operating system.
+        try:
+            search_button = self.driver.find_element(By.ID, "ctl00_cphRegistersMasterPage_btnFirmNameSearch")
             modifier_key = Keys.COMMAND if platform.system() == 'Darwin' else Keys.CONTROL
             action = ActionChains(self.driver)
-            action.key_down(modifier_key).click(link).key_up(modifier_key).perform()
-            time.sleep(2)
-            # Waiting for the new window to open and then switch to it.
-            
+            action.key_down(modifier_key).click(search_button).key_up(modifier_key).perform()
+            time.sleep(2) 
+        except Exception as e:
+            print("No search button found")
+            print(f"Error: {e}")
+
+    def _click_link(self, cells):
+            try:
+                link = cells[1].find_element(By.TAG_NAME, "a")
+                # Determine the modifier key based on the operating system.
+                modifier_key = Keys.COMMAND if platform.system() == 'Darwin' else Keys.CONTROL
+                action = ActionChains(self.driver)
+                action.key_down(modifier_key).click(link).key_up(modifier_key).perform()
+                time.sleep(2)
+                # Waiting for the new window to open and then switch to it.
+            except Exception as e:
+                print("No link found")
+                print(f"Error: {e}")
+
     def _get_description(self):
         try:
             description_element = WebDriverWait(self.driver, 20).until(
@@ -40,6 +48,6 @@ class BrowserEvents(HandleWindow):
             description = description_element.text
         except Exception as e:
             description = "Description not found."
-            print(f"Error finding description: {e}")
+            print(f"Error finding description. {e}")
 
         return description
